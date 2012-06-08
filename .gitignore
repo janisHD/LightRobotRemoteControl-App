@@ -4,3 +4,4 @@
 *.class
 bin/
 gen/
+*.cache
