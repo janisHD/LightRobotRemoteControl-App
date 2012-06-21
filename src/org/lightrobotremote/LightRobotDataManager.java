@@ -98,8 +98,14 @@ public class LightRobotDataManager {
 	}
 	
 	public void setSpeed(byte speed)
-	{//TODO: Beware of switches from -127 to 128 (overflow)!
+	{
 		mSpeed = speed;
+		updatePacket();
+	}
+	
+	public void setDirection(byte direction)
+	{
+		mDirection = direction;
 		updatePacket();
 	}
 	
@@ -109,27 +115,18 @@ public class LightRobotDataManager {
 	 */
 	public void alterSpeed(byte amount)
 	{
-		byte delta = (byte)(MOVE_VALUE_MAX - (mSpeed*Math.signum(amount)));
+		short delta = (short)(MOVE_VALUE_MAX - (mSpeed*Math.signum(amount)));
+		if(delta > MOVE_VALUE_MAX)
+			delta = MOVE_VALUE_MAX;
 		if(delta < Math.abs(amount))
 			amount = (byte)(delta * Math.signum(amount));
 		mSpeed += amount;
 		updatePacket();
 	}
 	
-	public byte getSpeed()
-	{
-		return mSpeed;
-	}
-	
-	public void setDirection(byte direction)
-	{//TODO: Beware of switches from -127 to 128 (overflow)!
-		mDirection = direction;
-		updatePacket();
-	}
-	
 	/** Changes the value of mDirection not absolut, but relative according to the amount
 	 * 
-	 * @param amount [-127, 127] the amount of altering the value, Overflow is checked (and not possible).
+	 * @param amount [-127, 127] the amount of how much will the value be altered, Overflow is checked (and not possible).
 	 */
 	public void alterDirection(byte amount)
 	{
@@ -140,6 +137,11 @@ public class LightRobotDataManager {
 			amount = (byte)(delta * Math.signum(amount));
 		mDirection += amount;
 		updatePacket();
+	}
+	
+	public byte getSpeed()
+	{
+		return mSpeed;
 	}
 	
 	public  byte getDirection() {
@@ -223,7 +225,7 @@ public class LightRobotDataManager {
 		mDataPacket[POSITION_PACKET_DIRECTION] = mDirection;
 		mDataPacket[POSITION_PACKET_COLOR] = mColor;
 		mDataPacket[POSITION_PACKET_MODE] = mMode;
-		//TODO: send messages to activity!
+		
 		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_SEND_DATA, 0, 0).sendToTarget();
 		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DATA, 0, 0).sendToTarget();
 	}

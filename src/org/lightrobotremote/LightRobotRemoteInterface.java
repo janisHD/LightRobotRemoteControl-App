@@ -184,16 +184,7 @@ public class LightRobotRemoteInterface extends Activity {
 			}
 		});
 
-		// Initialize the move_left Button with a listener for events
-		mMoveRightButton = (Button) findViewById(R.id.button_move_right);
-		mMoveRightButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				// Increase the direction in which to drive
-				mDataManager.alterDirection((byte)10);
-			}
-		});
-
-		// Initialize the move_left Button with a listener for events
+		// Initialize the move_forward Button with a listener for events
 		mMoveForwardButton = (Button) findViewById(R.id.button_move_forward);
 		mMoveForwardButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -201,20 +192,31 @@ public class LightRobotRemoteInterface extends Activity {
 				mDataManager.alterSpeed((byte)10);
 			}
 		});
-		
+
+
+		//Initialize the move_stop Button with a listener for events
 		mMoveStopButton = (Button) findViewById(R.id.button_move_stop);
 		mMoveStopButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				// Increase the speed of the robot.
+				// stops the robot
 				mDataManager.resetMoveValues();
 			}
 		});
-		// Initialize the move_left Button with a listener for events
+		// Initialize the move_backward Button with a listener for events
 		mMoveBackwardButton = (Button) findViewById(R.id.button_move_backward);
 		mMoveBackwardButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				// Decrease the direction in which to drive
+				// Decrease the speed of the robot
 				mDataManager.alterSpeed((byte)-10);
+			}
+		});
+
+		// Initialize the move_right Button with a listener for events
+		mMoveRightButton = (Button) findViewById(R.id.button_move_right);
+		mMoveRightButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				// Increase the direction in which to drive
+				mDataManager.alterDirection((byte)10);
 			}
 		});
 
@@ -278,6 +280,18 @@ public class LightRobotRemoteInterface extends Activity {
 			mOutStringBuffer.setLength(0);
 			mOutEditText.setText(mOutStringBuffer);
 		}
+	}
+
+	private void sendMessage(byte[] message)
+	{
+		// Check that we're actually connected before trying anything
+		if (mBTService.getState() != BluetoothService.STATE_CONNECTED) {
+			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		// Get the message bytes and tell the BluetoothService to write
+		mBTService.write(message);
 	}
 
 	// The action listener for the EditText widget, to listen for the return key
@@ -354,8 +368,7 @@ public class LightRobotRemoteInterface extends Activity {
 				break;
 			case MESSAGE_SEND_DATA:
 
-				String temp_string_message = new String(mDataManager.getDataPacket());
-				LightRobotRemoteInterface.this.sendMessage(temp_string_message);
+				LightRobotRemoteInterface.this.sendMessage(mDataManager.getDataPacket());
 				break;
 
 			}
