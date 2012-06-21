@@ -42,4 +42,5 @@
     <string name="move_forward">^</string>
     <string name="move_backward">v</string>
     <string name="move_left">&lt;-</string>
+    <string name="move_stop">-</string>
 </resources>

@@ -20,13 +20,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ListView
+    <!--<ListView
         android:id="@+id/in"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll" />
+        android:transcriptMode="alwaysScroll" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,13 +37,18 @@
             android:id="@+id/button_move_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/move_right" />
+            android:text="@string/move_left" />
 
         <Button
             android:id="@+id/button_move_forward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/move_forward" />
+        <Button
+            android:id="@+id/button_move_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/move_stop" />
 
         <Button
             android:id="@+id/button_move_backward"
@@ -52,10 +57,10 @@
             android:text="@string/move_backward" />
 
         <Button
-            android:id="@+id/button_move_left"
+            android:id="@+id/button_move_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/move_left" />
+            android:text="@string/move_right" />
     </LinearLayout>
 
     <LinearLayout
