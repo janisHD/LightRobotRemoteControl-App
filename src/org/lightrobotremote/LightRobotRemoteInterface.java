@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,7 +57,7 @@ public class LightRobotRemoteInterface extends Activity {
 	public static final int MESSAGE_TOAST = 5;
 
 
-	//Message types sent from the LightRobotDataManager
+	//Message types sent from the LightRobotDataManager and the Control parts
 	public static final int MESSAGE_UPDATE_DATA = 1;
 	public static final int MESSAGE_SEND_DATA = 2;
 
@@ -95,6 +97,10 @@ public class LightRobotRemoteInterface extends Activity {
 	private BluetoothService mBTService = null;
 
 	private LightRobotDataManager mDataManager = null;
+	
+	private LightRobotAccelerometerControl mControlAcc = null;
+	private SensorManager mSensorManager;
+	private WindowManager mWindowManager;
 
 
 	@Override
@@ -134,6 +140,10 @@ public class LightRobotRemoteInterface extends Activity {
 			finish();
 			return;
 		}
+		
+		//Sensor
+		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 	}
 
 	@Override
@@ -244,6 +254,7 @@ public class LightRobotRemoteInterface extends Activity {
 		mOutStringBuffer = new StringBuffer("");
 
 		mDataManager = new LightRobotDataManager(mDataHandler);
+		mControlAcc = new LightRobotAccelerometerControl(mSensorManager, mWindowManager, mDataAcchandler);
 	}
 
 	@Override
@@ -389,6 +400,20 @@ public class LightRobotRemoteInterface extends Activity {
 				LightRobotRemoteInterface.this.sendMessage(mDataManager.getDataPacket());
 				break;
 
+			}
+		}
+	};
+	
+	private final Handler mDataAcchandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg)
+		{
+			switch(msg.what)
+			{
+			case MESSAGE_UPDATE_DATA:
+				mData_acc_x.setText(String.valueOf(mControlAcc.getSensorX()));
+				mData_acc_y.setText(String.valueOf(mControlAcc.getSensorY()));
+				break;
 			}
 		}
 	};

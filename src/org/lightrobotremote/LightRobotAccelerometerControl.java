@@ -20,16 +20,25 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 	private Handler mHandler;
 	
 	private LightRobotDataManager mDataManager;
+	
+	//Fields for the acc data
+	private float mData_acc_x;
+	private float mData_acc_y;
 
-	public LightRobotAccelerometerControl(SensorManager sensorManager, WindowManager windowManager, Handler handler, LightRobotDataManager dataManager)
-	{
+	public LightRobotAccelerometerControl(SensorManager sensorManager, WindowManager windowManager, Handler handler)
+	{//TODO:: Add data manager and dont communicate with the activity directly!
 		mSensorManager = sensorManager;
 		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		mDisplay = windowManager.getDefaultDisplay();
 		
 		mHandler = handler;
 		
-		mDataManager = dataManager;
+		//mDataManager = dataManager;
+		
+		mData_acc_x = 0.f;
+		mData_acc_y = 0.f;
+		
+		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 	}
 
 
@@ -65,18 +74,25 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 		case Surface.ROTATION_270:
 			sensorX = event.values[1];
 			sensorY = -event.values[0];
-			break;
+			break;	
 		}
 		
-
+		mData_acc_x = sensorX;
+		mData_acc_y = sensorY;
+		
+		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DATA,0,0).sendToTarget();
 
 	}
-
-
-
-
-
-
+	
+	public float getSensorX()
+	{
+		return mData_acc_x;
+	}
+	
+	public float getSensorY()
+	{
+		return mData_acc_y;
+	}
 
 
 	@Override
