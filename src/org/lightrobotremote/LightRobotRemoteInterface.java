@@ -393,7 +393,6 @@ public class LightRobotRemoteInterface extends Activity {
 				
 				mData_speed.setText(String.valueOf(mDataManager.getSpeed()));
 				mData_direction.setText(String.valueOf(mDataManager.getDirection()));
-				//TODO: Update fields which show the current Data
 				break;
 			case MESSAGE_SEND_DATA:
 
@@ -413,6 +412,9 @@ public class LightRobotRemoteInterface extends Activity {
 			case MESSAGE_UPDATE_DATA:
 				mData_acc_x.setText(String.valueOf(mControlAcc.getSensorX()));
 				mData_acc_y.setText(String.valueOf(mControlAcc.getSensorY()));
+				
+				mDataManager.setSpeed(mControlAcc.getSpeedAcc());				
+				mDataManager.setDirection(mControlAcc.getDirectionAcc());
 				break;
 			}
 		}
