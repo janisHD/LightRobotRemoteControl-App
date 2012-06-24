@@ -70,6 +70,10 @@ public class LightRobotRemoteInterface extends Activity {
 
 	// Layout Views
 	private TextView mTitle;
+	private TextView mData_speed;
+	private TextView mData_direction;
+	private TextView mData_acc_x;
+	private TextView mData_acc_y;
 	//private ListView mConversationView;
 	private EditText mOutEditText;
 	private Button mSendButton;
@@ -107,6 +111,19 @@ public class LightRobotRemoteInterface extends Activity {
 		mTitle = (TextView) findViewById(R.id.title_left_text);
 		mTitle.setText(R.string.app_name);
 		mTitle = (TextView) findViewById(R.id.title_right_text);
+		
+		//Set up data display
+		mData_speed = (TextView) findViewById(R.id.data_speed);
+		mData_speed.setText(String.valueOf(0));
+		
+		mData_direction = (TextView) findViewById(R.id.data_direction);
+		mData_direction.setText(String.valueOf(0));
+		
+		mData_acc_x = (TextView) findViewById(R.id.data_acc_x);
+		mData_acc_x.setText(String.valueOf(0));
+		
+		mData_acc_y = (TextView) findViewById(R.id.data_acc_y);
+		mData_acc_y.setText(String.valueOf(0));
 
 		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -289,7 +306,6 @@ public class LightRobotRemoteInterface extends Activity {
 			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
 			return;
 		}
-
 		// Get the message bytes and tell the BluetoothService to write
 		mBTService.write(message);
 	}
@@ -363,7 +379,9 @@ public class LightRobotRemoteInterface extends Activity {
 			switch(msg.what)
 			{
 			case MESSAGE_UPDATE_DATA:
-
+				
+				mData_speed.setText(String.valueOf(mDataManager.getSpeed()));
+				mData_direction.setText(String.valueOf(mDataManager.getDirection()));
 				//TODO: Update fields which show the current Data
 				break;
 			case MESSAGE_SEND_DATA:
