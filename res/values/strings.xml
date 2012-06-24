@@ -43,4 +43,8 @@
     <string name="move_backward">v</string>
     <string name="move_left">&lt;-</string>
     <string name="move_stop">-</string>
+    <string name="name_data_acc_x_value">Acc_x:</string>
+    <string name="name_data_acc_y_value">Acc_y:</string>
+    <string name="name_data_speed_value">Spd:</string>
+    <string name="name_data_direction_value">Dir:</string>
 </resources>

@@ -1,4 +1,4 @@
-import org.lightrobotremote.LightRobotDataManager;
+package org.lightrobotremote;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
