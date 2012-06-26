@@ -36,13 +36,23 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
+/**@class LightRobotRemoteInterface
  * This is the main Activity that displays the remote control interface.
+ * TODO Add Voice Recognition
+ * TODO Add Color control
+ * TODO Add Color display
+ * TODO Add Mode control
+ * TODO Add Mode display
  */
 public class LightRobotRemoteInterface extends Activity {
 	// Debugging
@@ -58,6 +68,7 @@ public class LightRobotRemoteInterface extends Activity {
 
 
 	//Message types sent from the LightRobotDataManager and the Control parts
+	public static final int MESSAGE_UPDATE_DISPLAY = 0;
 	public static final int MESSAGE_UPDATE_DATA = 1;
 	public static final int MESSAGE_SEND_DATA = 2;
 
@@ -69,6 +80,20 @@ public class LightRobotRemoteInterface extends Activity {
 	private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
 	private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
 	private static final int REQUEST_ENABLE_BT = 3;
+
+	//Control checks
+	private ListView mControlList;
+
+	//Status which control is active
+	public static final int STATUS_NO_CONTROL = 0;
+	public static final int STATUS_BUTTON_CONTROL = 1;
+	public static final int STATUS_ACC_CONTROL = 2;
+	public static final int STATUS_VOICE_CONTROL = 3;
+	
+	private final String [] mControlItems = new String[]{"No Control", "Button Control", "Acc Control", "Voice Control"};
+	
+	public int mControlStatus = STATUS_NO_CONTROL;
+	public int mControlStatusOld = STATUS_NO_CONTROL;
 
 	// Layout Views
 	private TextView mTitle;
@@ -97,11 +122,13 @@ public class LightRobotRemoteInterface extends Activity {
 	private BluetoothService mBTService = null;
 
 	private LightRobotDataManager mDataManager = null;
-	
+
 	private LightRobotAccelerometerControl mControlAcc = null;
 	private SensorManager mSensorManager;
 	private WindowManager mWindowManager;
 
+
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -117,17 +144,73 @@ public class LightRobotRemoteInterface extends Activity {
 		mTitle = (TextView) findViewById(R.id.title_left_text);
 		mTitle.setText(R.string.app_name);
 		mTitle = (TextView) findViewById(R.id.title_right_text);
-		
+
+
+		mControlList = (ListView) findViewById(R.id.listView1);
+		ArrayAdapter<String> ad = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, mControlItems);
+		mControlList.setAdapter(ad);
+		mControlList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		mControlList.setSelection(0);
+		mControlList.setItemChecked(0, true);
+
+		mControlList.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView arg0, View arg1, int arg2, long arg3)
+			{
+				mControlStatus = arg2;
+				updateControlStatus();
+			}
+		});
+
+
+
+		/*mActivateButtonControl = (CheckedTextView) findViewById(R.id.checkButtonControl);
+		mActivateButtonControl.setChecked(false);
+		mActivateButtonControl.setOnClickListener(new OnClickListener() {
+			public void onClick(View v)
+			{
+				if(mActivateButtonControl.isChecked())
+					mControlStatus = STATUS_BUTTON_CONTROL;
+				else
+					mControlStatus = STATUS_NO_CONTROL;
+				updateControlStatus();
+			}});
+
+		mActivateAccControl = (CheckedTextView) findViewById(R.id.checkAccControl);
+		mActivateAccControl.setChecked(false);
+		mActivateAccControl.setOnClickListener(new OnClickListener() {
+			public void onClick(View v)
+			{
+				if(mActivateAccControl.isChecked())
+					mControlStatus = STATUS_ACC_CONTROL;
+				else
+					mControlStatus = STATUS_NO_CONTROL;
+				updateControlStatus();
+			}});
+
+		mActivateVoiceControl = (CheckedTextView) findViewById(R.id.checkVoiceControl);
+		mActivateVoiceControl.setChecked(false);
+		mActivateVoiceControl.setOnClickListener(new OnClickListener() {
+			public void onClick(View v)
+			{
+				if(mActivateVoiceControl.isChecked())
+					mControlStatus = STATUS_VOICE_CONTROL;
+				else
+					mControlStatus = STATUS_NO_CONTROL;
+				updateControlStatus();
+			}});*/
+
+
+
 		//Set up data display
 		mData_speed = (TextView) findViewById(R.id.data_speed);
 		mData_speed.setText(String.valueOf(0));
-		
+
 		mData_direction = (TextView) findViewById(R.id.data_direction);
 		mData_direction.setText(String.valueOf(0));
-		
+
 		mData_acc_x = (TextView) findViewById(R.id.data_acc_x);
 		mData_acc_x.setText(String.valueOf(0));
-		
+
 		mData_acc_y = (TextView) findViewById(R.id.data_acc_y);
 		mData_acc_y.setText(String.valueOf(0));
 
@@ -140,7 +223,7 @@ public class LightRobotRemoteInterface extends Activity {
 			finish();
 			return;
 		}
-		
+
 		//Sensor
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -176,16 +259,15 @@ public class LightRobotRemoteInterface extends Activity {
 				// Start the Bluetooth chat services
 				mBTService.start();
 			}
+			mDataManager.resetAllValues();
+			mControlStatus = STATUS_NO_CONTROL;
+			updateControlStatus();
 		}
+		
 	}
 
 	private void setupBTService() {
 		Log.d(TAG, "setupService()");
-
-		// Initialize the array adapter for the conversation thread
-		//mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
-		//mConversationView = (ListView) findViewById(R.id.in);
-		//mConversationView.setAdapter(mConversationArrayAdapter);
 
 		// Initialize the compose field with a listener for the return key
 		mOutEditText = (EditText) findViewById(R.id.edit_text_out);
@@ -261,18 +343,24 @@ public class LightRobotRemoteInterface extends Activity {
 	public synchronized void onPause() {
 		super.onPause();
 		if(D) Log.e(TAG, "- ON PAUSE -");
+		
+		mControlStatus = STATUS_NO_CONTROL;
+		updateControlStatus();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
 		if(D) Log.e(TAG, "-- ON STOP --");
+		mControlStatus = STATUS_NO_CONTROL;
+		updateControlStatus();
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		// Stop the Bluetooth chat services
+		mControlStatus = STATUS_NO_CONTROL;
+		updateControlStatus();
 		if (mBTService != null) mBTService.stop();
 		if(D) Log.e(TAG, "--- ON DESTROY ---");
 	}
@@ -284,6 +372,49 @@ public class LightRobotRemoteInterface extends Activity {
 			Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 			discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
 			startActivity(discoverableIntent);
+		}
+	}
+
+
+	/** Updates the internal status defining which sort of control is used 
+	 * TODO: Parameter new_status: the desired status -> mControlStatus is then obsolete
+	 */
+
+	private void updateControlStatus()
+	{
+		if(mControlStatus != mControlStatusOld)
+		{//on status change
+			//stop robot
+			mDataManager.resetMoveValues();
+			//TODO: Update for other controls
+			switch(mControlStatusOld)
+			{
+			case STATUS_ACC_CONTROL:
+				mControlAcc.stopControlAcc();
+				break;
+			}
+			
+			mControlStatusOld = mControlStatus;
+
+			switch(mControlStatus)
+			{
+			case STATUS_NO_CONTROL:
+				//uncheck all
+				mControlList.setItemChecked(STATUS_NO_CONTROL, true);
+				mControlList.setSelection(STATUS_NO_CONTROL);
+
+				break;
+			case STATUS_BUTTON_CONTROL:
+
+				break;
+			case STATUS_ACC_CONTROL:
+
+				mControlAcc.startControlAcc();
+				break;
+			case STATUS_VOICE_CONTROL:
+
+				break;
+			}
 		}
 	}
 
@@ -314,7 +445,7 @@ public class LightRobotRemoteInterface extends Activity {
 	{
 		// Check that we're actually connected before trying anything
 		if (mBTService.getState() != BluetoothService.STATE_CONNECTED) {
-			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+			//Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		// Get the message bytes and tell the BluetoothService to write
@@ -389,8 +520,8 @@ public class LightRobotRemoteInterface extends Activity {
 		{
 			switch(msg.what)
 			{
-			case MESSAGE_UPDATE_DATA:
-				
+			case MESSAGE_UPDATE_DISPLAY:
+
 				mData_speed.setText(String.valueOf(mDataManager.getSpeed()));
 				mData_direction.setText(String.valueOf(mDataManager.getDirection()));
 				break;
@@ -402,16 +533,19 @@ public class LightRobotRemoteInterface extends Activity {
 			}
 		}
 	};
-	
+
 	private final Handler mDataAcchandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg)
 		{
 			switch(msg.what)
 			{
-			case MESSAGE_UPDATE_DATA:
+			case MESSAGE_UPDATE_DISPLAY:
+				
 				mData_acc_x.setText(String.valueOf(mControlAcc.getSensorX()));
 				mData_acc_y.setText(String.valueOf(mControlAcc.getSensorY()));
+				break;
+			case MESSAGE_UPDATE_DATA:
 				
 				mDataManager.setSpeed(mControlAcc.getSpeedAcc());				
 				mDataManager.setDirection(mControlAcc.getDirectionAcc());

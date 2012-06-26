@@ -97,6 +97,15 @@ public class LightRobotDataManager {
 		updatePacket();
 	}
 	
+	public void resetAllValues()
+	{
+		mSpeed = 0;
+		mDirection = 0;
+		mColor = 0;
+		mMode = 0;
+		updatePacket();
+	}
+	
 	public void setSpeed(byte speed)
 	{
 		mSpeed = speed;
@@ -227,7 +236,7 @@ public class LightRobotDataManager {
 		mDataPacket[POSITION_PACKET_MODE] = mMode;
 		
 		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_SEND_DATA, 0, 0).sendToTarget();
-		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DATA, 0, 0).sendToTarget();
+		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DISPLAY, 0, 0).sendToTarget();
 	}
 	
 	public byte[] getDataPacket()

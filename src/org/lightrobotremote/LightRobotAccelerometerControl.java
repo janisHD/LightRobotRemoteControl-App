@@ -14,7 +14,7 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
-	/*!needed to get the orientation of the screen*/
+	/**needed to get the orientation of the screen*/
 	private Display mDisplay;
 	
 	private Handler mHandler;
@@ -35,10 +35,26 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 		mDisplay = windowManager.getDefaultDisplay();
 		
 		mHandler = handler;
-		
-		//mDataManager = dataManager;
-		
+	}
+	
+	/** Register the callback function to receive new data from the acc-sensor.
+	 * 
+	 */
+	public void startControlAcc()
+	{
 		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+	}
+	
+	/** Unregister the callback function to stop receiving data from the acc-sensor.
+	 * 
+	 */
+	
+	public void stopControlAcc()
+	{
+		mSensorManager.unregisterListener(this);
+		mData_acc_x = 0.f;
+		mData_acc_y = 0.f;
+		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DISPLAY,0,0).sendToTarget();
 	}
 
 
@@ -47,9 +63,7 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 		if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
 			return;
 		/*
-		 * record the accelerometer data, the event's timestamp as well as
-		 * the current time. The latter is needed so we can calculate the
-		 * "present" time during rendering. In this application, we need to
+		 * Record the accelerometer data. In this application, we need to
 		 * take into account how the screen is rotated with respect to the
 		 * sensors (which always return data in a coordinate space aligned
 		 * to with the screen in its native orientation).
@@ -83,8 +97,8 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 		mSpeed_acc = convertSensorYToSpeed(sensorY);
 		mDirection_acc = convertSensorXToDirection(sensorX);
 		
-		
 		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DATA,0,0).sendToTarget();
+		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DISPLAY,0,0).sendToTarget();
 
 	}
 	
@@ -109,7 +123,7 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 	}
 	
 	
-	/*! First simple idea -> Sensor Values from 0 (parallel to ground) to 9.5 (orthogonal to ground) are linear transformed to a value between 127 and -127.
+	/** First simple idea -> Sensor Values from 0 (parallel to ground) to 9.5 (orthogonal to ground) are linear transformed to a value between 127 and -127.
 	 * @param sensorY the value from the y-axis of the acc-sensor.
 	 * @return a value between 127 and -127.
 	 */
@@ -126,7 +140,7 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 	}
 	
 	
-	/*! First simple idea -> Sensor Values from 4.0 (tilted to the left) to -4.0 (tilted to the right) are linear transformed to a value between 127 and -127.
+	/** First simple idea -> Sensor Values from 4.0 (tilted to the left) to -4.0 (tilted to the right) are linear transformed to a value between 127 and -127.
 	 * @param sensorX the value from the x-axis of the acc-sensor.
 	 * @return a value between 127 and -127.
 	 */
