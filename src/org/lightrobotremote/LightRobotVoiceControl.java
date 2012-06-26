@@ -8,8 +8,10 @@
 
 package org.lightrobotremote;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
-import android.widget.ListView;
+import android.os.Handler;
 
 
 /**
@@ -17,10 +19,162 @@ import android.widget.ListView;
  * @author Julian
  *
  */
-public class LightRobotVoiceControl extends Activity {
-	
-	private static final int REQUEST_CODE = 1111;
-	private ListView wordsList;
-	
+public class LightRobotVoiceControl {
 
+	private static final int NUMBER_OF_WORDS = 2;
+
+	//Each command consists of two words part1 and part2 respectively.
+	private static final String PART_1_0 = "move";
+	private static final String PART_1_1 = "turn";
+	private static final String PART_1_2 = "shine";
+	private static final String PART_1_3 = "blink";
+
+	private static final String PART_2_MOVE_0 = "forward";
+	private static final String PART_2_MOVE_1 = "backward";
+	private static final String PART_2_MOVE_2 = "random";
+
+	private static final String PART_2_TURN_0 = "left";
+	private static final String PART_2_TURN_1 = "right";
+
+
+	private static final String PART_2_SHINE_0 = "white";
+	private static final String PART_2_SHINE_1 = "black";
+	private static final String PART_2_SHINE_2 = "red";
+	private static final String PART_2_SHINE_3 = "green";
+	private static final String PART_2_SHINE_4 = "blue";
+	private static final String PART_2_SHINE_5 = "random";
+
+	private static final String PART_2_BLINK_0 = "white";
+	private static final String PART_2_BLINK_1 = "black";
+	private static final String PART_2_BLINK_2 = "red";
+	private static final String PART_2_BLINK_3 = "green";
+	private static final String PART_2_BLINK_4 = "blue";
+	private static final String PART_2_BLINK_5 = "random";
+
+	private ArrayList<String> mWordsList;
+	
+	private String mPart_1;
+	public String getPart_1() {
+		return mPart_1;
+	}
+
+	public String getPart_2() {
+		return mPart_2;
+	}
+
+	private String mPart_2;
+
+	private Handler mHandler;
+
+	private boolean mIsFirstPartCorrect = false;
+	private boolean mIsSecondPartCorrect = false;
+	private boolean mIsCommandCorrect = false;
+	
+	public boolean isFirstPartCorrect() {
+		return mIsFirstPartCorrect;
+	}
+
+	public boolean isSecondPartCorrect() {
+		return mIsSecondPartCorrect;
+	}
+
+	public boolean isCommandCorrect() {
+		return mIsCommandCorrect;
+	}
+	
+	public LightRobotVoiceControl(Handler uiHandler)
+	{
+		mHandler = uiHandler;			
+	}
+
+
+	public void setWordList(ArrayList<String> new_words)
+	{
+		mWordsList = new_words;
+		mIsFirstPartCorrect = false;
+		mIsSecondPartCorrect = false;
+		mIsCommandCorrect = false;
+		parseWords();
+	}
+
+	public ArrayList<String> recognizedWords()
+	{
+		return mWordsList;
+	}
+
+	private void parseWords()
+	{
+		ArrayList<String> present_words = mWordsList;
+		ArrayList<ArrayList<String> > possible_commands = new ArrayList<ArrayList<String> >();
+
+		for (int i = 0; i < present_words.size(); i++) {
+
+			String[] words = present_words.get(i).split("\\s+");
+			if(words.length == NUMBER_OF_WORDS)
+			{
+				ArrayList<String> temp_command = new ArrayList<String>();
+				temp_command.add(words[0]);
+				temp_command.add(words[1]);
+
+				possible_commands.add(temp_command);
+			}
+		}
+
+		int number_of_possible_commands = possible_commands.size();
+		String[] temp_command = new String[]{"", ""};
+		boolean isFirstPartCorrect = false;
+		boolean isSecondPartCorrect = false;
+
+		for (int i = 0; i < number_of_possible_commands && !(isFirstPartCorrect && isSecondPartCorrect); i++) {
+
+			isFirstPartCorrect = false;
+			isSecondPartCorrect = false;
+			temp_command[0] = possible_commands.get(i).get(0);
+			temp_command[1] = possible_commands.get(i).get(1);
+
+			if(temp_command[0].equalsIgnoreCase(PART_1_0))
+			{
+				mIsFirstPartCorrect = true;
+				if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_0))
+				{
+					mIsSecondPartCorrect = true;
+
+				}
+				else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_1))
+				{
+					mIsSecondPartCorrect = true;
+
+				}
+				else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_2))
+				{
+					mIsSecondPartCorrect = true;
+
+				}
+			}
+			else if(temp_command[0].equalsIgnoreCase(PART_1_1))
+			{
+				mIsFirstPartCorrect = true;
+
+			}
+			else if(temp_command[0].equalsIgnoreCase(PART_1_2))
+			{
+				mIsFirstPartCorrect = true;
+
+			}
+			else if(temp_command[0].equalsIgnoreCase(PART_1_3))
+			{
+				mIsFirstPartCorrect = true;
+
+			}
+		}
+
+		mPart_1 = temp_command[0];
+		mPart_2 = temp_command[1];
+		
+		mIsFirstPartCorrect = isFirstPartCorrect;
+		mIsSecondPartCorrect = isSecondPartCorrect;
+		mIsCommandCorrect = isFirstPartCorrect && isSecondPartCorrect;
+		
+		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DISPLAY, 0, 0).sendToTarget();
+	}
 }

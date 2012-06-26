@@ -16,6 +16,8 @@
 
 package org.lightrobotremote;
 
+import java.util.ArrayList;
+
 import org.lightrobotremote.R;
 
 import android.app.Activity;
@@ -26,6 +28,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -89,9 +92,9 @@ public class LightRobotRemoteInterface extends Activity {
 	public static final int STATUS_BUTTON_CONTROL = 1;
 	public static final int STATUS_ACC_CONTROL = 2;
 	public static final int STATUS_VOICE_CONTROL = 3;
-	
+
 	private final String [] mControlItems = new String[]{"No Control", "Button Control", "Acc Control", "Voice Control"};
-	
+
 	public int mControlStatus = STATUS_NO_CONTROL;
 	public int mControlStatusOld = STATUS_NO_CONTROL;
 
@@ -101,6 +104,7 @@ public class LightRobotRemoteInterface extends Activity {
 	private TextView mData_direction;
 	private TextView mData_acc_x;
 	private TextView mData_acc_y;
+	private TextView mData_voice;
 	//private ListView mConversationView;
 	private EditText mOutEditText;
 	private Button mSendButton;
@@ -127,8 +131,12 @@ public class LightRobotRemoteInterface extends Activity {
 	private SensorManager mSensorManager;
 	private WindowManager mWindowManager;
 
+	private LightRobotVoiceControl mControlVoice = null;
 
-	
+	private static final int VOICE_ACTIVITY = 1111;
+
+
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -214,6 +222,9 @@ public class LightRobotRemoteInterface extends Activity {
 		mData_acc_y = (TextView) findViewById(R.id.data_acc_y);
 		mData_acc_y.setText(String.valueOf(0));
 
+		mData_voice = (TextView) findViewById(R.id.data_voice_rec);
+		mData_voice.setText("-");
+
 		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -263,7 +274,7 @@ public class LightRobotRemoteInterface extends Activity {
 			mControlStatus = STATUS_NO_CONTROL;
 			updateControlStatus();
 		}
-		
+
 	}
 
 	private void setupBTService() {
@@ -336,14 +347,15 @@ public class LightRobotRemoteInterface extends Activity {
 		mOutStringBuffer = new StringBuffer("");
 
 		mDataManager = new LightRobotDataManager(mDataHandler);
-		mControlAcc = new LightRobotAccelerometerControl(mSensorManager, mWindowManager, mDataAcchandler);
+		mControlAcc = new LightRobotAccelerometerControl(mSensorManager, mWindowManager, mControlAccHandler);
+		mControlVoice = new LightRobotVoiceControl(mControlVoiceHandler);
 	}
 
 	@Override
 	public synchronized void onPause() {
 		super.onPause();
 		if(D) Log.e(TAG, "- ON PAUSE -");
-		
+
 		mControlStatus = STATUS_NO_CONTROL;
 		updateControlStatus();
 	}
@@ -393,7 +405,7 @@ public class LightRobotRemoteInterface extends Activity {
 				mControlAcc.stopControlAcc();
 				break;
 			}
-			
+
 			mControlStatusOld = mControlStatus;
 
 			switch(mControlStatus)
@@ -412,6 +424,7 @@ public class LightRobotRemoteInterface extends Activity {
 				mControlAcc.startControlAcc();
 				break;
 			case STATUS_VOICE_CONTROL:
+				startVoiceRecogService();
 
 				break;
 			}
@@ -534,19 +547,19 @@ public class LightRobotRemoteInterface extends Activity {
 		}
 	};
 
-	private final Handler mDataAcchandler = new Handler() {
+	private final Handler mControlAccHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg)
 		{
 			switch(msg.what)
 			{
 			case MESSAGE_UPDATE_DISPLAY:
-				
+
 				mData_acc_x.setText(String.valueOf(mControlAcc.getSensorX()));
 				mData_acc_y.setText(String.valueOf(mControlAcc.getSensorY()));
 				break;
 			case MESSAGE_UPDATE_DATA:
-				
+
 				mDataManager.setSpeed(mControlAcc.getSpeedAcc());				
 				mDataManager.setDirection(mControlAcc.getDirectionAcc());
 				break;
@@ -554,9 +567,34 @@ public class LightRobotRemoteInterface extends Activity {
 		}
 	};
 
+	private final Handler mControlVoiceHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg)
+		{
+			switch(msg.what)
+			{
+			case MESSAGE_UPDATE_DISPLAY:
+				mData_voice.setText("Bla");
+				break;
+			}
+		}
+	};
+
+	private void startVoiceRecogService()
+	{
+		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+		intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "LightRobot Voice Command");
+		startActivityForResult(intent, VOICE_ACTIVITY);
+	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(D) Log.d(TAG, "onActivityResult " + resultCode);
 		switch (requestCode) {
+		case VOICE_ACTIVITY:
+			if (resultCode == Activity.RESULT_OK)
+				mControlVoice.setWordList(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS));
+			break;
 		case REQUEST_CONNECT_DEVICE_SECURE:
 			// When DeviceListActivity returns with a device to connect
 			if (resultCode == Activity.RESULT_OK) {
