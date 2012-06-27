@@ -52,7 +52,7 @@ public class LightRobotVoiceControl {
 	private static final String PART_2_BLINK_5 = "random";
 
 	private ArrayList<String> mWordsList;
-	
+
 	private String mPart_1;
 	public String getPart_1() {
 		return mPart_1;
@@ -69,7 +69,7 @@ public class LightRobotVoiceControl {
 	private boolean mIsFirstPartCorrect = false;
 	private boolean mIsSecondPartCorrect = false;
 	private boolean mIsCommandCorrect = false;
-	
+
 	public boolean isFirstPartCorrect() {
 		return mIsFirstPartCorrect;
 	}
@@ -81,7 +81,7 @@ public class LightRobotVoiceControl {
 	public boolean isCommandCorrect() {
 		return mIsCommandCorrect;
 	}
-	
+
 	public LightRobotVoiceControl(Handler uiHandler)
 	{
 		mHandler = uiHandler;			
@@ -121,60 +121,78 @@ public class LightRobotVoiceControl {
 		}
 
 		int number_of_possible_commands = possible_commands.size();
-		String[] temp_command = new String[]{"", ""};
-		boolean isFirstPartCorrect = false;
-		boolean isSecondPartCorrect = false;
+		if(number_of_possible_commands > 0)
+		{
+			String[] temp_command = new String[]{"", ""};
+			boolean isFirstPartCorrect = false;
+			boolean isSecondPartCorrect = false;
 
-		for (int i = 0; i < number_of_possible_commands && !(isFirstPartCorrect && isSecondPartCorrect); i++) {
+			for (int i = 0; i < number_of_possible_commands && !(isFirstPartCorrect && isSecondPartCorrect); i++) {
 
-			isFirstPartCorrect = false;
-			isSecondPartCorrect = false;
-			temp_command[0] = possible_commands.get(i).get(0);
-			temp_command[1] = possible_commands.get(i).get(1);
+				isFirstPartCorrect = false;
+				isSecondPartCorrect = false;
+				temp_command[0] = possible_commands.get(i).get(0);
+				temp_command[1] = possible_commands.get(i).get(1);
 
-			if(temp_command[0].equalsIgnoreCase(PART_1_0))
-			{
-				mIsFirstPartCorrect = true;
-				if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_0))
+				if(temp_command[0].equalsIgnoreCase(PART_1_0))
 				{
-					mIsSecondPartCorrect = true;
+					isFirstPartCorrect = true;
+					if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_0))
+					{
+						isSecondPartCorrect = true;
+
+					}
+					else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_1))
+					{
+						isSecondPartCorrect = true;
+
+					}
+					else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_2))
+					{
+						isSecondPartCorrect = true;
+
+					}
+				}
+				else if(temp_command[0].equalsIgnoreCase(PART_1_1))
+				{
+					isFirstPartCorrect = true;
 
 				}
-				else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_1))
+				else if(temp_command[0].equalsIgnoreCase(PART_1_2))
 				{
-					mIsSecondPartCorrect = true;
+					isFirstPartCorrect = true;
 
 				}
-				else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_2))
+				else if(temp_command[0].equalsIgnoreCase(PART_1_3))
 				{
-					mIsSecondPartCorrect = true;
+					isFirstPartCorrect = true;
 
 				}
 			}
-			else if(temp_command[0].equalsIgnoreCase(PART_1_1))
-			{
-				mIsFirstPartCorrect = true;
 
+
+			mIsFirstPartCorrect = isFirstPartCorrect;
+			mIsSecondPartCorrect = isSecondPartCorrect;
+			mIsCommandCorrect = isFirstPartCorrect && isSecondPartCorrect;
+
+			if(mIsCommandCorrect)
+			{//save the correct recognized words
+				mPart_1 = temp_command[0];
+				mPart_2 = temp_command[1];	
 			}
-			else if(temp_command[0].equalsIgnoreCase(PART_1_2))
-			{
-				mIsFirstPartCorrect = true;
-
-			}
-			else if(temp_command[0].equalsIgnoreCase(PART_1_3))
-			{
-				mIsFirstPartCorrect = true;
-
+			else
+			{//save the best guess (the first two words in the array)
+				mPart_1 = possible_commands.get(0).get(0);
+				mPart_2 = possible_commands.get(0).get(1);
 			}
 		}
+		else
+		{
+			mPart_1 = "-";
+			mPart_2 = "-";
 
-		mPart_1 = temp_command[0];
-		mPart_2 = temp_command[1];
-		
-		mIsFirstPartCorrect = isFirstPartCorrect;
-		mIsSecondPartCorrect = isSecondPartCorrect;
-		mIsCommandCorrect = isFirstPartCorrect && isSecondPartCorrect;
-		
+		}
+
 		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DISPLAY, 0, 0).sendToTarget();
 	}
 }

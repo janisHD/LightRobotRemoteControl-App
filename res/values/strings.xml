@@ -51,4 +51,6 @@
     <string name="activate_voice_control">Activate Voice-Control</string>
     <string name="activate_button_control">Activate Button-Control</string>
     <string name="name_data_voice_rec_value">Voice comm:</string>
+    <color name="solid_red">#ffff0000</color>
+    <color name="solid_green">#ff00ff00</color>
 </resources>

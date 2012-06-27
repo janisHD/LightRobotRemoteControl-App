@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import org.lightrobotremote.R;
 
+import android.R.color;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -52,6 +53,7 @@ import android.widget.Toast;
 /**@class LightRobotRemoteInterface
  * This is the main Activity that displays the remote control interface.
  * TODO Add Voice Recognition
+ * TODO Add timer for sending
  * TODO Add Color control
  * TODO Add Color display
  * TODO Add Mode control
@@ -168,46 +170,6 @@ public class LightRobotRemoteInterface extends Activity {
 				updateControlStatus();
 			}
 		});
-
-
-
-		/*mActivateButtonControl = (CheckedTextView) findViewById(R.id.checkButtonControl);
-		mActivateButtonControl.setChecked(false);
-		mActivateButtonControl.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				if(mActivateButtonControl.isChecked())
-					mControlStatus = STATUS_BUTTON_CONTROL;
-				else
-					mControlStatus = STATUS_NO_CONTROL;
-				updateControlStatus();
-			}});
-
-		mActivateAccControl = (CheckedTextView) findViewById(R.id.checkAccControl);
-		mActivateAccControl.setChecked(false);
-		mActivateAccControl.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				if(mActivateAccControl.isChecked())
-					mControlStatus = STATUS_ACC_CONTROL;
-				else
-					mControlStatus = STATUS_NO_CONTROL;
-				updateControlStatus();
-			}});
-
-		mActivateVoiceControl = (CheckedTextView) findViewById(R.id.checkVoiceControl);
-		mActivateVoiceControl.setChecked(false);
-		mActivateVoiceControl.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				if(mActivateVoiceControl.isChecked())
-					mControlStatus = STATUS_VOICE_CONTROL;
-				else
-					mControlStatus = STATUS_NO_CONTROL;
-				updateControlStatus();
-			}});*/
-
-
 
 		//Set up data display
 		mData_speed = (TextView) findViewById(R.id.data_speed);
@@ -574,7 +536,16 @@ public class LightRobotRemoteInterface extends Activity {
 			switch(msg.what)
 			{
 			case MESSAGE_UPDATE_DISPLAY:
-				mData_voice.setText("Bla");
+				//mData_voice.setText("Bla");
+				if(mControlVoice.isCommandCorrect())
+					//mData_voice.setBackgroundColor(R.color.solid_green);
+					mData_voice.setBackgroundColor(0xff00ff00);
+				else
+					//mData_voice.setBackgroundColor(R.color.solid_red);
+					mData_voice.setBackgroundColor(0xffff0000);
+
+				mData_voice.setText(" " + mControlVoice.getPart_1() + " " + mControlVoice.getPart_2());
+
 				break;
 			}
 		}
@@ -583,7 +554,7 @@ public class LightRobotRemoteInterface extends Activity {
 	private void startVoiceRecogService()
 	{
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
 		intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "LightRobot Voice Command");
 		startActivityForResult(intent, VOICE_ACTIVITY);
 	}
