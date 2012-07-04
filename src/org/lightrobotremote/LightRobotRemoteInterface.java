@@ -104,12 +104,12 @@ public class LightRobotRemoteInterface extends Activity {
 	private TextView mTitle;
 	private TextView mData_speed;
 	private TextView mData_direction;
-	private TextView mData_acc_x;
-	private TextView mData_acc_y;
+//	private TextView mData_acc_x;
+//	private TextView mData_acc_y;
 	private TextView mData_voice;
 	//private ListView mConversationView;
-	private EditText mOutEditText;
-	private Button mSendButton;
+	//private EditText mOutEditText;
+	//private Button mSendButton;
 	private Button mMoveLeftButton;
 	private Button mMoveForwardButton;
 	private Button mMoveStopButton;
@@ -121,7 +121,7 @@ public class LightRobotRemoteInterface extends Activity {
 	// Array adapter for the conversation thread
 	//private ArrayAdapter<String> mConversationArrayAdapter;
 	// String buffer for outgoing messages
-	private StringBuffer mOutStringBuffer;
+	//private StringBuffer mOutStringBuffer;
 	// Local Bluetooth adapter
 	private BluetoothAdapter mBluetoothAdapter = null;
 	// Member object for the chat services
@@ -178,11 +178,11 @@ public class LightRobotRemoteInterface extends Activity {
 		mData_direction = (TextView) findViewById(R.id.data_direction);
 		mData_direction.setText(String.valueOf(0));
 
-		mData_acc_x = (TextView) findViewById(R.id.data_acc_x);
-		mData_acc_x.setText(String.valueOf(0));
+		//mData_acc_x = (TextView) findViewById(R.id.data_acc_x);
+		//mData_acc_x.setText(String.valueOf(0));
 
-		mData_acc_y = (TextView) findViewById(R.id.data_acc_y);
-		mData_acc_y.setText(String.valueOf(0));
+		//mData_acc_y = (TextView) findViewById(R.id.data_acc_y);
+		//mData_acc_y.setText(String.valueOf(0));
 
 		mData_voice = (TextView) findViewById(R.id.data_voice_rec);
 		mData_voice.setText("-");
@@ -243,19 +243,19 @@ public class LightRobotRemoteInterface extends Activity {
 		Log.d(TAG, "setupService()");
 
 		// Initialize the compose field with a listener for the return key
-		mOutEditText = (EditText) findViewById(R.id.edit_text_out);
-		mOutEditText.setOnEditorActionListener(mWriteListener);
+		//mOutEditText = (EditText) findViewById(R.id.edit_text_out);
+		//mOutEditText.setOnEditorActionListener(mWriteListener);
 
 		// Initialize the send button with a listener that for click events
-		mSendButton = (Button) findViewById(R.id.button_send);
-		mSendButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				// Send a message using content of the edit text widget
-				TextView view = (TextView) findViewById(R.id.edit_text_out);
-				String message = view.getText().toString();
-				sendMessage(message);
-			}
-		});
+		//mSendButton = (Button) findViewById(R.id.button_send);
+//		mSendButton.setOnClickListener(new OnClickListener() {
+//			public void onClick(View v) {
+//				// Send a message using content of the edit text widget
+//				TextView view = (TextView) findViewById(R.id.edit_text_out);
+//				String message = view.getText().toString();
+//				sendMessage(message);
+//			}
+//		});
 
 		// Initialize the move_left Button with a listener for events
 		mMoveLeftButton = (Button) findViewById(R.id.button_move_left);
@@ -306,7 +306,7 @@ public class LightRobotRemoteInterface extends Activity {
 		mBTService = new BluetoothService(this, mBTServiceHandler);
 
 		// Initialize the buffer for outgoing messages
-		mOutStringBuffer = new StringBuffer("");
+		//mOutStringBuffer = new StringBuffer("");
 
 		mDataManager = new LightRobotDataManager(mDataHandler);
 		mControlAcc = new LightRobotAccelerometerControl(mSensorManager, mWindowManager, mControlAccHandler);
@@ -407,12 +407,12 @@ public class LightRobotRemoteInterface extends Activity {
 		// Check that there's actually something to send
 		if (message.length() > 0) {
 			// Get the message bytes and tell the BluetoothService to write
-			byte[] send = message.getBytes();
-			mBTService.write(send);
+			//byte[] send = message.getBytes();
+			//mBTService.write(send);
 
 			// Reset out string buffer to zero and clear the edit text field
-			mOutStringBuffer.setLength(0);
-			mOutEditText.setText(mOutStringBuffer);
+			//mOutStringBuffer.setLength(0);
+			//mOutEditText.setText(mOutStringBuffer);
 		}
 	}
 
@@ -428,18 +428,18 @@ public class LightRobotRemoteInterface extends Activity {
 	}
 
 	// The action listener for the EditText widget, to listen for the return key
-	private TextView.OnEditorActionListener mWriteListener =
-			new TextView.OnEditorActionListener() {
-		public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-			// If the action is a key-up event on the return key, send the message
-			if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-				String message = view.getText().toString();
-				sendMessage(message);
-			}
-			if(D) Log.i(TAG, "END onEditorAction");
-			return true;
-		}
-	};
+//	private TextView.OnEditorActionListener mWriteListener =
+//			new TextView.OnEditorActionListener() {
+//		public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
+//			// If the action is a key-up event on the return key, send the message
+//			if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
+//				String message = view.getText().toString();
+//				sendMessage(message);
+//			}
+//			if(D) Log.i(TAG, "END onEditorAction");
+//			return true;
+//		}
+//	};
 
 	// The Handler that gets information back from the BluetoothService
 	private final Handler mBTServiceHandler = new Handler() {
@@ -517,8 +517,8 @@ public class LightRobotRemoteInterface extends Activity {
 			{
 			case MESSAGE_UPDATE_DISPLAY:
 
-				mData_acc_x.setText(String.valueOf(mControlAcc.getSensorX()));
-				mData_acc_y.setText(String.valueOf(mControlAcc.getSensorY()));
+//				mData_acc_x.setText(String.valueOf(mControlAcc.getSensorX()));
+//				mData_acc_y.setText(String.valueOf(mControlAcc.getSensorY()));
 				break;
 			case MESSAGE_UPDATE_DATA:
 

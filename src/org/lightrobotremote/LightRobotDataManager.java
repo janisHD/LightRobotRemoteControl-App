@@ -1,5 +1,7 @@
 package org.lightrobotremote;
 
+import org.lightrobotremote.util.ColorHelper;
+
 import android.os.Handler;
 
 
@@ -29,27 +31,9 @@ public class LightRobotDataManager {
 	 */
 	private  byte mDirection = 0;//
 	
-	/** sets the color of the lamps [0, 255]
-	 * b0, b1 -> brightness -> 00 off, 11 max
-	 * b2, b3 -> red value
-	 * b4, b5 -> green value
-	 * b6, b7 -> blue value
-	 */
-	private  byte mColor = 0;
-	private static final short MASK_SHORT_BYTE = 0xff;
-	private static final byte MASK_BRIGHTNESS = 0x03;//0b00000011;
-	private static final byte POSITION_BRIGHTNESS = 0;
-	private static final byte MASK_RED = 0x0C;
-	private static final byte POSITION_RED = 2;
-	private static final byte MASK_GREEN = 0x30;
-	private static final byte POSITION_GREEN = 4;
-	private static final byte MASK_BLUE = -0x40;//0xc0 11000000
-	private static final byte POSITION_BLUE = 6;
-	private static final byte mColorLookup[] = {0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,
-												1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,
-												2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,
-												3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3};
+	private ColorHelper mColor;
 	
+		
 	/** sets the mode of the robot AND the mode of the light
 	 * b0, b1, b2, b3 -> Color mode -> 	0000 -> remote (color set by remote)
 	 * 									0001 -> blink (color set by remote, blinks)
@@ -84,34 +68,52 @@ public class LightRobotDataManager {
 	
 	private  boolean mSendNewPacket = false;
 	
+	/**Constructor gets the handler and stores it for updating the UI and sending messages.
+	 * 
+	 * @param handler
+	 */
 	public LightRobotDataManager(Handler handler)
 	{
 		mHandler = handler;
 	}
 	
-	
+	/** Stops the movement of the Robot.
+	 * 
+	 */
 	public void resetMoveValues()
 	{
+		mMode = 0;
 		mSpeed = 0;
 		mDirection = 0;
 		updatePacket();
 	}
 	
+	/** Resets all values, updates and sends the data package.
+	 * 
+	 */
 	public void resetAllValues()
 	{
 		mSpeed = 0;
 		mDirection = 0;
-		mColor = 0;
+		mColor.setColor(0);
 		mMode = 0;
 		updatePacket();
 	}
 	
+	/** Set the speed of the robot
+	 * 
+	 * @param speed the desired speed of the robot.
+	 */
 	public void setSpeed(byte speed)
 	{
 		mSpeed = speed;
 		updatePacket();
 	}
 	
+	/** Set the direction in which to drive
+	 * 
+	 * @param direction the direction in which the robot should move.
+	 */
 	public void setDirection(byte direction)
 	{
 		mDirection = direction;
@@ -148,51 +150,49 @@ public class LightRobotDataManager {
 		updatePacket();
 	}
 	
+	/** Gets the current speed value.
+	 * 
+	 * @return the current speed
+	 */
 	public byte getSpeed()
 	{
 		return mSpeed;
 	}
 	
+	/** Gets the current direction value.
+	 * 
+	 * @return the current direction
+	 */
 	public  byte getDirection() {
 		return mDirection;
 	}
-
-	public void setColor(short brightness, short red, short green, short blue)
-	{
-		setColorBrightness(brightness);
-		setColorRed(red);
-		setColorGreen(green);
-		setColorBlue(blue);
-	}
 	
-	public void setColorBrightness(short brightness)
+	/** Sets the current color
+	 * @param color the desired color to be set
+	 */
+	
+	public void setColor(ColorHelper color)
 	{
-		setColorPart(brightness, POSITION_BRIGHTNESS, MASK_BRIGHTNESS);
+		mColor = color;
 		updatePacket();
 	}
 	
-	public void setColorRed(short red)
+	/** Gets the current color
+	 * @return the current color
+	 */
+	public ColorHelper getColor()
 	{
-		setColorPart(red, POSITION_RED, MASK_RED);
-		updatePacket();
-	}
-	
-	public void setColorGreen(short green)
-	{
-		setColorPart(green, POSITION_GREEN, MASK_GREEN);
-		updatePacket();
-	}
-	
-	public void setColorBlue(short blue)
-	{
-		setColorPart(blue, POSITION_BLUE, MASK_BLUE);
-		updatePacket();
-	}
-	
-	public  byte getColor() {
 		return mColor;
 	}
 	
+	
+	/** Sets the color mode:
+	 * 0 -> off
+	 * 1 -> shine
+	 * 2 -> blink
+	 * 3 -> random
+	 * @param color_mode the color mode
+	 */
 	public void setColorMode(byte color_mode)
 	{
 		byte tempMode = (byte)(mMode & ~MASK_COLOR_MODE);//clear color mode field.
@@ -201,6 +201,16 @@ public class LightRobotDataManager {
 		updatePacket();
 	}
 	
+	/** Set the internal mode of the robot:
+	 * 0 -> remotecontrolled
+	 * 1 -> random movement
+	 * 2 -> move forward
+	 * 3 -> move backward
+	 * 4 -> turn left
+	 * 5 -> turn right
+	 * 
+	 * @param drive_mode mode for the robot
+	 */
 	public void setMode(byte drive_mode)
 	{
 		byte tempMode = (byte)(mMode & ~MASK_DRIVE_MODE);//clear color mode field.
@@ -209,38 +219,38 @@ public class LightRobotDataManager {
 		updatePacket();
 	}
 	
+	/** Returns the encoded mode value.
+	 * 
+	 * @return the encoded code value
+	 */
 	public byte getMode() {
 		return mMode;
 	}
-
 	
-	private void setColorPart(short value, byte position, byte mask)
-	{
-		byte tempValue = shortToColor(value, position);
-		mColor = (byte)(tempValue | ((byte)(mColor & ~mask)));
-	}
-	
-	private byte shortToColor(short value, byte position)
-	{
-		short tempValue = (byte)(value & MASK_SHORT_BYTE);//maximum value is now 254
-		tempValue = mColorLookup[tempValue];//lookup which value should be used
-		tempValue = (byte)(tempValue << position);//shift to correct position
-		return (byte)tempValue;
-	}
-	
+	/** Updates the fields of the data packet, sends a message for display and one to send the data
+	 * 
+	 */	
 	private void updatePacket()
 	{
 		mDataPacket[POSITION_PACKET_SPEED] = mSpeed;
 		mDataPacket[POSITION_PACKET_DIRECTION] = mDirection;
-		mDataPacket[POSITION_PACKET_COLOR] = mColor;
+		mDataPacket[POSITION_PACKET_COLOR] = mColor.getColor();
 		mDataPacket[POSITION_PACKET_MODE] = mMode;
 		
 		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_SEND_DATA, 0, 0).sendToTarget();
 		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DISPLAY, 0, 0).sendToTarget();
 	}
 	
+	/** Returns the current data packet
+	 * 
+	 * @return array with the 4 data fields
+	 */
 	public byte[] getDataPacket()
 	{
+		mDataPacket[POSITION_PACKET_SPEED] = mSpeed;
+		mDataPacket[POSITION_PACKET_DIRECTION] = mDirection;
+		mDataPacket[POSITION_PACKET_COLOR] = mColor.getColor();
+		mDataPacket[POSITION_PACKET_MODE] = mMode;
 		return mDataPacket;
 	}
 	

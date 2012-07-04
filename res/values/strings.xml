@@ -53,4 +53,12 @@
     <string name="name_data_voice_rec_value">Voice comm:</string>
     <color name="solid_red">#ffff0000</color>
     <color name="solid_green">#ff00ff00</color>
+    <string name="choice_mode_0_text">Remote</string>
+    <string name="choice_mode_1_text">Random</string>
+    <string name="choice_mode_2_text">Forward</string>
+    <string name="choice_mode_3_text">Backward</string>
+    <string name="choice_color_0_text">Shine</string>
+    <string name="choice_color_1_text">Blink</string>
+    <string name="choice_color_2_text">Random Sh.</string>
+    <string name="choice_color_3_text">Random Bl.</string>
 </resources>
