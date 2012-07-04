@@ -31,7 +31,7 @@ public class LightRobotDataManager {
 	 */
 	private  byte mDirection = 0;//
 	
-	private ColorHelper mColor;
+	private ColorHelper mColor = new ColorHelper(0);
 	
 		
 	/** sets the mode of the robot AND the mode of the light
@@ -75,6 +75,7 @@ public class LightRobotDataManager {
 	public LightRobotDataManager(Handler handler)
 	{
 		mHandler = handler;
+//		mColor = new ColorHelper(0);
 	}
 	
 	/** Stops the movement of the Robot.

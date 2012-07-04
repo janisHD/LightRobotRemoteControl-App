@@ -27,9 +27,9 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll" />
+        android:transcriptMode="alwaysScroll" />
     -->
-
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -266,8 +266,7 @@
         android:layout_height="match_parent"
         android:layout_weight="2.46"
         android:gravity="center|fill"
-        android:orientation="vertical" >
-
+        android:orientation="vertical" >
         <ListView
             android:id="@+id/listView1"
             android:layout_width="match_parent"
