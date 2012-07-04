@@ -44,11 +44,17 @@ public class LightRobotDataManager {
 	 */
 	private  byte mMode = 0;
 	
+	private static final byte MASK_MODE = 0x0f; //masks the the last 4 bits, only the 4 bits are used
+	
 	private static final byte POSITION_DRIVE_MODE = 0;
-	private static final byte MASK_DRIVE_MODE = 0x03;
+	private static final byte MASK_DRIVE_MODE = 0x0f;
 	
 	public static final byte DRIVE_MODE_REMOTE = 0;
 	public static final byte DRIVE_MODE_RANDOM = 1;
+	public static final byte DRIVE_MODE_FORWARD = 2;
+	public static final byte DRIVE_MODE_BACKWARD = 3;
+	public static final byte DRIVE_MODE_LEFT = 4;
+	public static final byte DRIVE_MODE_RIGHT = 5;
 	
 	private static final byte POSITION_COLOR_MODE = 4;
 	private static final byte MASK_COLOR_MODE = -0x10;
@@ -188,16 +194,16 @@ public class LightRobotDataManager {
 	
 	
 	/** Sets the color mode:
-	 * 0 -> off
-	 * 1 -> shine
-	 * 2 -> blink
-	 * 3 -> random
+	 * 0 -> shine 
+	 * 1 -> blink 
+	 * 2 -> random shine
+	 * 3 -> random blink
 	 * @param color_mode the color mode
 	 */
 	public void setColorMode(byte color_mode)
 	{
 		byte tempMode = (byte)(mMode & ~MASK_COLOR_MODE);//clear color mode field.
-		tempMode |= (byte)(((byte)(color_mode & MASK_COLOR_MODE)) << POSITION_COLOR_MODE);
+		tempMode |= (byte)(((byte)(color_mode & MASK_MODE)) << POSITION_COLOR_MODE);
 		mMode = tempMode;
 		updatePacket();
 	}
@@ -215,7 +221,7 @@ public class LightRobotDataManager {
 	public void setMode(byte drive_mode)
 	{
 		byte tempMode = (byte)(mMode & ~MASK_DRIVE_MODE);//clear color mode field.
-		tempMode |= (byte)(((byte)(drive_mode & MASK_DRIVE_MODE)) << POSITION_DRIVE_MODE);
+		tempMode |= (byte)(((byte)(drive_mode & MASK_MODE)) << POSITION_DRIVE_MODE);
 		mMode = tempMode;
 		updatePacket();
 	}
