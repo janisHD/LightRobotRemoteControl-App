@@ -150,18 +150,23 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:baselineAligned="false" >
-
+
                 <SeekBar
                     android:id="@+id/seek_color"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
+                    android:layout_weight="1"
+                    android:progress="0"
+                    android:max="63" />
+
                 <SeekBar
                     android:id="@+id/seek_brightness"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1" 
+                    android:progress="0"
+                    android:max="254" />
+
             </TableRow>
         </TableLayout>
 

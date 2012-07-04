@@ -25,7 +25,8 @@ public class ColorHelper {
 	 */
 	private  byte mColor = 0;
 	private static final short MASK_SHORT_BYTE = 0xff;
-	private static final byte MASK_RGB = 0x3f;
+	private static final byte MASK_RGB = 0x3f;//0b00111111
+	private static final byte MASK_RGB_FROM_BYTE = -0x04; //0b11111100
 	private static final byte MASK_BRIGHTNESS = 0x03;//0b00000011;
 	private static final byte POSITION_BRIGHTNESS = 0;
 	private static final byte MASK_RED = 0x0C;
@@ -55,9 +56,13 @@ public class ColorHelper {
 		setColor(color_value);
 	}
 	
+	/** Sets the RGB part of the color at once
+	 * 
+	 * @param color_value a value between [0 63] which determines the color
+	 */
 	public void setColor(byte color_value)
 	{
-		color_value = (byte) (color_value & MASK_RGB);//only the first 6 bits remain
+		color_value = (byte) (color_value & MASK_RGB);//only the lowest 6 bits remain
 		byte temp_color = (byte) (mColor & ~MASK_RGB);
 		temp_color = (byte) (temp_color | color_value);
 		mColor = temp_color;
@@ -153,7 +158,7 @@ public class ColorHelper {
 	 */
 	private byte shortToColor(short value, byte position)
 	{
-		short tempValue = (byte)(value & MASK_SHORT_BYTE);//maximum value is now 254
+		short tempValue = (short)(value & MASK_SHORT_BYTE);//maximum value is now 254
 		tempValue = mColorLookup[tempValue];//lookup which value should be used
 		tempValue = (byte)(tempValue << position);//shift to correct position
 		return (byte)tempValue;

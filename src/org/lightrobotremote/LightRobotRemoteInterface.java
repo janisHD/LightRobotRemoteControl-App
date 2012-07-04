@@ -19,6 +19,7 @@ package org.lightrobotremote;
 import java.util.ArrayList;
 
 import org.lightrobotremote.R;
+import org.lightrobotremote.util.ColorHelper;
 
 import android.R.color;
 import android.app.Activity;
@@ -48,7 +49,9 @@ import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -120,6 +123,10 @@ public class LightRobotRemoteInterface extends Activity {
 
 	private RadioGroup mChoiceMode;
 	private RadioGroup mChoiceColorMode;
+	
+	private SeekBar mSeekColor;
+	private SeekBar mSeekBrightness;
+	private ColorHelper mColor = new ColorHelper(0);
 
 	// Name of the connected device
 	private String mConnectedDeviceName = null;
@@ -242,6 +249,53 @@ public class LightRobotRemoteInterface extends Activity {
 				break;
 				}
 
+			}
+		});
+		
+		mSeekColor = (SeekBar) findViewById(R.id.seek_color);
+		mSeekColor.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				//send only if bar is released TODO: test if its useful to do it after every change
+				mDataManager.setColor(mColor);	
+
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				//nothing to do here
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				//TODO: Alter the color of the seekbar according to progress
+				mColor.setColor((byte)progress);
+							
+			}
+		});
+		
+		mSeekBrightness = (SeekBar) findViewById(R.id.seek_brightness);
+		mSeekBrightness.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				//send only if bar is released TODO: test if its useful to do it after every change
+				mDataManager.setColor(mColor);	
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				//nothing to do here
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				//TODO: Alter the brightness of the seekbar
+				mColor.setColorBrightness((byte)progress);
+							
 			}
 		});
 	}
