@@ -57,12 +57,7 @@ import android.widget.Toast;
 
 /**@class LightRobotRemoteInterface
  * This is the main Activity that displays the remote control interface.
- * TODO Add Voice Recognition
  * TODO Add timer for sending
- * TODO Add Color control
- * TODO Add Color display
- * TODO Add Mode control
- * TODO Add Mode display
  */
 public class LightRobotRemoteInterface extends Activity {
 	// Debugging
@@ -148,6 +143,8 @@ public class LightRobotRemoteInterface extends Activity {
 	private LightRobotVoiceControl mControlVoice = null;
 
 	private static final int VOICE_ACTIVITY = 1111;
+	
+	private long initial_time=0;
 
 
 
@@ -599,8 +596,12 @@ public class LightRobotRemoteInterface extends Activity {
 				mData_direction.setText(String.valueOf(mDataManager.getDirection()));
 				break;
 			case MESSAGE_SEND_DATA:
-
+				long time_now = System.currentTimeMillis();
+				if(time_now - initial_time > 10 || initial_time==0)
+				{
 				LightRobotRemoteInterface.this.sendMessage(mDataManager.getDataPacket());
+				initial_time = System.currentTimeMillis();
+				}
 				break;
 
 			}

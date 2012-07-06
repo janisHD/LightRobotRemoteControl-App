@@ -11,7 +11,7 @@ import android.graphics.Color;
  * b4-b5: Green value of the light
  * b6-b7: Blue value of the light
  * 
- * @author Julian
+ * @author Julian, Oier
  *
  */
 

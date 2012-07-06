@@ -7,7 +7,7 @@ import android.os.Handler;
 
 /** Stores the current data values which will be sent to the robot.
  * 
- * @author Julian
+ * @author Julian, Oier
  *
  */
 public class LightRobotDataManager {
@@ -83,7 +83,6 @@ public class LightRobotDataManager {
 	public LightRobotDataManager(Handler handler)
 	{
 		mHandler = handler;
-//		mColor = new ColorHelper(0);
 	}
 	
 	/** Stops the movement of the Robot.
