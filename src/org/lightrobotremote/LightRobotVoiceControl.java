@@ -10,13 +10,15 @@ package org.lightrobotremote;
 
 import java.util.ArrayList;
 
+import org.lightrobotremote.util.ColorHelper;
+
 import android.app.Activity;
 import android.os.Handler;
 
 
 /**
  * 
- * @author Julian
+ * @author Julian, Oier
  *
  */
 public class LightRobotVoiceControl {
@@ -51,6 +53,12 @@ public class LightRobotVoiceControl {
 	private static final String PART_2_BLINK_4 = "blue";
 	private static final String PART_2_BLINK_5 = "random";
 
+	private byte driveMode;
+
+	private byte colorMode = 0;
+	
+	private  ColorHelper mColor = new ColorHelper(0);
+
 	private ArrayList<String> mWordsList;
 
 	private String mPart_1;
@@ -69,6 +77,7 @@ public class LightRobotVoiceControl {
 	private boolean mIsFirstPartCorrect = false;
 	private boolean mIsSecondPartCorrect = false;
 	private boolean mIsCommandCorrect = false;
+
 
 	public boolean isFirstPartCorrect() {
 		return mIsFirstPartCorrect;
@@ -140,14 +149,16 @@ public class LightRobotVoiceControl {
 					if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_0))//forward
 					{
 						isSecondPartCorrect = true;
-					}
+						driveMode = LightRobotDataManager.DRIVE_MODE_FORWARD;					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_1))//backward
 					{
 						isSecondPartCorrect = true;
+						driveMode = LightRobotDataManager.DRIVE_MODE_BACKWARD;
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_2))//random
 					{
 						isSecondPartCorrect = true;
+						driveMode = LightRobotDataManager.DRIVE_MODE_RANDOM;
 					}
 				}
 				else if(temp_command[0].equalsIgnoreCase(PART_1_1))//turn
@@ -156,66 +167,84 @@ public class LightRobotVoiceControl {
 					if(temp_command[1].equalsIgnoreCase(PART_2_TURN_0))//left
 					{
 						isSecondPartCorrect = true;
+						driveMode = LightRobotDataManager.DRIVE_MODE_LEFT;
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_TURN_1))//right
 					{
 						isSecondPartCorrect = true;
+						driveMode = LightRobotDataManager.DRIVE_MODE_RIGHT;
 					}
 				}
 				else if(temp_command[0].equalsIgnoreCase(PART_1_2))//shine
 				{
 					isFirstPartCorrect = true;
+					colorMode = LightRobotDataManager.COLOR_MODE_SHINE;
+					
 					if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_0))//white
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xffffffff);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_1))//black
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xff000000);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_2))//red
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xffff0000);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_3))//green
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xff00ff00);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_4))//blue
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xff0000ff);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_5))//random
 					{
 						isSecondPartCorrect = true;
+						colorMode = LightRobotDataManager.COLOR_MODE_RANDOM;
 					}
 				}
 				else if(temp_command[0].equalsIgnoreCase(PART_1_3))
 				{
 					isFirstPartCorrect = true;
+					colorMode = LightRobotDataManager.COLOR_MODE_BLINK;
+					
 					if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_0))//white
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xffffffff);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_1))//black
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xff000000);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_2))//red
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xffff0000);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_3))//green
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xff00ff00);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_4))//blue
 					{
 						isSecondPartCorrect = true;
+						mColor.setColor(0xff0000ff);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_5))//random
 					{
 						isSecondPartCorrect = true;
+						colorMode = LightRobotDataManager.COLOR_MODE_RANDOM_BLINK;
 					}
 				}
 			}
@@ -243,5 +272,18 @@ public class LightRobotVoiceControl {
 		}
 
 		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DISPLAY, 0, 0).sendToTarget();
+		mHandler.obtainMessage(LightRobotRemoteInterface.MESSAGE_UPDATE_DATA, 0, 0).sendToTarget();
+	}
+
+	public  ColorHelper getColor() {
+		return mColor;
+	}
+
+	public byte getDriveMode() {
+		return driveMode;
+	}
+
+	public byte getColorMode() {
+		return colorMode;
 	}
 }

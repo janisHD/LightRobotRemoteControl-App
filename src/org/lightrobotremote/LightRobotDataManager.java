@@ -41,6 +41,8 @@ public class LightRobotDataManager {
 	 * 									0011 -> random blink
 	 * b4, b5, b6, b7 -> Driving mode ->	0000 -> remote
 	 * 										0001 -> random drive
+	 * 										0010 -> forward
+	 * 										0011 -> backward
 	 */
 	private  byte mMode = 0;
 	
@@ -58,7 +60,7 @@ public class LightRobotDataManager {
 	
 	private static final byte POSITION_COLOR_MODE = 4;
 	private static final byte MASK_COLOR_MODE = -0x10;
-	public static final byte COLOR_MODE_REMOTE = 0;
+	public static final byte COLOR_MODE_SHINE = 0;
 	public static final byte COLOR_MODE_BLINK = 1;
 	public static final byte COLOR_MODE_RANDOM = 2;
 	public static final byte COLOR_MODE_RANDOM_BLINK = 3;

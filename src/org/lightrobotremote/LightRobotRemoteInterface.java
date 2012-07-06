@@ -239,7 +239,7 @@ public class LightRobotRemoteInterface extends Activity {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				switch (checkedId)
 				{
-				case R.id.choice_color_0 : mDataManager.setColorMode(LightRobotDataManager.COLOR_MODE_REMOTE);
+				case R.id.choice_color_0 : mDataManager.setColorMode(LightRobotDataManager.COLOR_MODE_SHINE);
 				break;
 				case R.id.choice_color_1 : mDataManager.setColorMode(LightRobotDataManager.COLOR_MODE_BLINK);
 				break;
@@ -633,6 +633,15 @@ public class LightRobotRemoteInterface extends Activity {
 		{
 			switch(msg.what)
 			{
+			case MESSAGE_UPDATE_DATA:
+				if(mControlVoice.isCommandCorrect())
+				{
+				mDataManager.setMode(mControlVoice.getDriveMode());
+				mDataManager.setColorMode(mControlVoice.getColorMode());
+				mDataManager.setColor(mControlVoice.getColor());
+				}
+				break;
+			
 			case MESSAGE_UPDATE_DISPLAY:
 				//mData_voice.setText("Bla");
 				if(mControlVoice.isCommandCorrect())
