@@ -183,17 +183,17 @@ public class LightRobotVoiceControl {
 					if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_0))//white
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xffffffff);
+						mColor.setColor(0xffffff00);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_1))//black
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xff000000);
+						mColor.setColor(0x00000000);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_2))//red
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xffff0000);
+						mColor.setColor(0xff000000);//a bit different because it is interpreted as hsb
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_3))//green
 					{
@@ -203,7 +203,7 @@ public class LightRobotVoiceControl {
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_4))//blue
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xff0000ff);
+						mColor.setColor(0xffffffff);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_5))//random
 					{

@@ -95,6 +95,7 @@ public class LightRobotRemoteInterface extends Activity {
 	public static final int STATUS_ACC_CONTROL = 2;
 	public static final int STATUS_VOICE_CONTROL = 3;
 
+
 	private final String [] mControlItems = new String[]{"No Control", "Button Control", "Acc Control", "Voice Control"};
 
 	public int mControlStatus = STATUS_NO_CONTROL;
@@ -118,7 +119,7 @@ public class LightRobotRemoteInterface extends Activity {
 
 	private RadioGroup mChoiceMode;
 	private RadioGroup mChoiceColorMode;
-	
+
 	private SeekBar mSeekColor;
 	private SeekBar mSeekBrightness;
 	private ColorHelper mColor = new ColorHelper(0);
@@ -141,9 +142,10 @@ public class LightRobotRemoteInterface extends Activity {
 	private WindowManager mWindowManager;
 
 	private LightRobotVoiceControl mControlVoice = null;
+	private boolean mIsVoiceControlActive = false;
 
 	private static final int VOICE_ACTIVITY = 1111;
-	
+
 	private long initial_time=0;
 
 
@@ -248,51 +250,53 @@ public class LightRobotRemoteInterface extends Activity {
 
 			}
 		});
-		
+
 		mSeekColor = (SeekBar) findViewById(R.id.seek_color);
 		mSeekColor.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-			
+
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				//send only if bar is released TODO: test if its useful to do it after every change
 				mDataManager.setColor(mColor);	
 
 			}
-			
+
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
 				//nothing to do here
 			}
-			
+
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 				//TODO: Alter the color of the seekbar according to progress
 				mColor.setColor((byte)progress);
-							
+				mDataManager.setColor(mColor);
+
 			}
 		});
-		
+
 		mSeekBrightness = (SeekBar) findViewById(R.id.seek_brightness);
 		mSeekBrightness.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-			
+
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				//send only if bar is released TODO: test if its useful to do it after every change
 				mDataManager.setColor(mColor);	
 			}
-			
+
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
 				//nothing to do here
 			}
-			
+
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 				//TODO: Alter the brightness of the seekbar
 				mColor.setColorBrightness((byte)progress);
-							
+				mDataManager.setColor(mColor);
+
 			}
 		});
 	}
@@ -327,9 +331,18 @@ public class LightRobotRemoteInterface extends Activity {
 				// Start the Bluetooth chat services
 				mBTService.start();
 			}
-			mDataManager.resetAllValues();
-			mControlStatus = STATUS_NO_CONTROL;
-			updateControlStatus();
+			if(!mIsVoiceControlActive)
+			{
+				mDataManager.resetAllValues();
+				mControlStatus = STATUS_NO_CONTROL;
+				updateControlStatus();
+			}
+			else
+			{
+				mIsVoiceControlActive = false;
+				mControlStatus = STATUS_NO_CONTROL;
+				updateControlStatus();
+			}
 		}
 
 	}
@@ -413,8 +426,11 @@ public class LightRobotRemoteInterface extends Activity {
 		super.onPause();
 		if(D) Log.e(TAG, "- ON PAUSE -");
 
-		mControlStatus = STATUS_NO_CONTROL;
-		updateControlStatus();
+		if(!mIsVoiceControlActive)
+		{
+			mControlStatus = STATUS_NO_CONTROL;
+			updateControlStatus();
+		}
 	}
 
 	@Override
@@ -437,7 +453,7 @@ public class LightRobotRemoteInterface extends Activity {
 	private void ensureDiscoverable() {
 		if(D) Log.d(TAG, "ensure discoverable");
 		if (mBluetoothAdapter.getScanMode() !=
-				BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+			BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
 			Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 			discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
 			startActivity(discoverableIntent);
@@ -599,8 +615,8 @@ public class LightRobotRemoteInterface extends Activity {
 				long time_now = System.currentTimeMillis();
 				if(time_now - initial_time > 10 || initial_time==0)
 				{
-				LightRobotRemoteInterface.this.sendMessage(mDataManager.getDataPacket());
-				initial_time = System.currentTimeMillis();
+					LightRobotRemoteInterface.this.sendMessage(mDataManager.getDataPacket());
+					initial_time = System.currentTimeMillis();
 				}
 				break;
 
@@ -621,8 +637,9 @@ public class LightRobotRemoteInterface extends Activity {
 				break;
 			case MESSAGE_UPDATE_DATA:
 
-				mDataManager.setSpeed(mControlAcc.getSpeedAcc());				
-				mDataManager.setDirection(mControlAcc.getDirectionAcc());
+				//mDataManager.setSpeed(mControlAcc.getSpeedAcc());				
+				//mDataManager.setDirection(mControlAcc.getDirectionAcc());
+				mDataManager.setSpeedDirection(mControlAcc.getSpeedAcc(),mControlAcc.getDirectionAcc());
 				break;
 			}
 		}
@@ -637,12 +654,12 @@ public class LightRobotRemoteInterface extends Activity {
 			case MESSAGE_UPDATE_DATA:
 				if(mControlVoice.isCommandCorrect())
 				{
-				mDataManager.setMode(mControlVoice.getDriveMode());
-				mDataManager.setColorMode(mControlVoice.getColorMode());
-				mDataManager.setColor(mControlVoice.getColor());
+					//mDataManager.setMode(mControlVoice.getDriveMode());
+					//mDataManager.setColorMode(mControlVoice.getColorMode());
+					mDataManager.setModeColor(mControlVoice.getDriveMode(), mControlVoice.getColorMode(), mControlVoice.getColor());
 				}
 				break;
-			
+
 			case MESSAGE_UPDATE_DISPLAY:
 				//mData_voice.setText("Bla");
 				if(mControlVoice.isCommandCorrect())
@@ -661,6 +678,7 @@ public class LightRobotRemoteInterface extends Activity {
 
 	private void startVoiceRecogService()
 	{
+		mIsVoiceControlActive = true;
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
 		intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "LightRobot Voice Command");
@@ -703,7 +721,7 @@ public class LightRobotRemoteInterface extends Activity {
 	private void connectDevice(Intent data, boolean secure) {
 		// Get the device MAC address
 		String address = data.getExtras()
-				.getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+		.getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 		// Get the BLuetoothDevice object
 		BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 		// Attempt to connect to the device

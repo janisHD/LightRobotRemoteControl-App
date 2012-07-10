@@ -2,6 +2,7 @@ package org.lightrobotremote;
 
 import org.lightrobotremote.util.ColorHelper;
 
+import android.graphics.Path.Direction;
 import android.os.Handler;
 
 
@@ -90,7 +91,7 @@ public class LightRobotDataManager {
 	 */
 	public void resetMoveValues()
 	{
-		mMode = 0;
+		//mMode = 0;
 		mSpeed = 0;
 		mDirection = 0;
 		updatePacket();
@@ -108,6 +109,13 @@ public class LightRobotDataManager {
 		updatePacket();
 	}
 	
+	
+	public void setSpeedDirection(byte speed, byte direction)
+	{
+		mSpeed = speed;
+		mDirection = direction;
+		updatePacket();
+	}
 	/** Set the speed of the robot
 	 * 
 	 * @param speed the desired speed of the robot.
@@ -233,6 +241,23 @@ public class LightRobotDataManager {
 	 */
 	public byte getMode() {
 		return mMode;
+	}
+	
+	
+	public void setModeColor(byte drive_mode, byte color_mode, ColorHelper color)
+	{
+		byte tempMode = (byte)(mMode & ~MASK_DRIVE_MODE);//clear color mode field.
+		tempMode |= (byte)(((byte)(drive_mode & MASK_MODE)) << POSITION_DRIVE_MODE);
+		mMode = tempMode;
+		
+		tempMode = (byte)(mMode & ~MASK_COLOR_MODE);//clear color mode field.
+		tempMode |= (byte)(((byte)(color_mode & MASK_MODE)) << POSITION_COLOR_MODE);
+		mMode = tempMode;
+		
+		mColor = color;
+		updatePacket();
+		
+		
 	}
 	
 	/** Updates the fields of the data packet, sends a message for display and one to send the data

@@ -26,6 +26,7 @@ public class ColorHelper {
 	private  byte mColor = 0;
 	private static final short MASK_SHORT_BYTE = 0xff;
 	private static final byte MASK_RGB = 0x3f;//0b00111111
+	private static final byte POSITION_RGB = 0x02;
 	private static final byte MASK_RGB_FROM_BYTE = -0x04; //0b11111100
 	private static final byte MASK_BRIGHTNESS = 0x03;//0b00000011;
 	private static final byte POSITION_BRIGHTNESS = 0;
@@ -63,8 +64,8 @@ public class ColorHelper {
 	public void setColor(byte color_value)
 	{
 		color_value = (byte) (color_value & MASK_RGB);//only the lowest 6 bits remain
-		byte temp_color = (byte) (mColor & ~MASK_RGB);
-		temp_color = (byte) (temp_color | color_value);
+		byte temp_color = (byte) (mColor & (~MASK_RGB_FROM_BYTE));//cut the brightness out
+		temp_color = (byte) (temp_color | color_value<<POSITION_RGB);
 		mColor = temp_color;
 	}
 	
