@@ -24,13 +24,14 @@ public class LightRobotDataManager {
 	 * negative values -> Backward
 	 */
 	private  byte mSpeed = 0;
-	private static final byte MOVE_VALUE_MAX = 127;
+	public static final byte SPEED_VALUE_MAX = 127;
 	
 	/** sets the direction (e.g. the turn rate) for the robot [-127, 127]
 	 * positive values -> turns right, 128 turns on point
 	 * negative values -> turns left, -127 turns on point
 	 */
 	private  byte mDirection = 0;//
+	public static final byte DIRECTION_VALUE_MAX = 127;
 	
 	private ColorHelper mColor = new ColorHelper(0);
 	
@@ -142,9 +143,9 @@ public class LightRobotDataManager {
 	 */
 	public void alterSpeed(byte amount)
 	{
-		short delta = (short)(MOVE_VALUE_MAX - (mSpeed*Math.signum(amount)));
-		if(delta > MOVE_VALUE_MAX)
-			delta = MOVE_VALUE_MAX;
+		short delta = (short)(SPEED_VALUE_MAX - (mSpeed*Math.signum(amount)));
+		if(delta > SPEED_VALUE_MAX)
+			delta = SPEED_VALUE_MAX;
 		if(delta < Math.abs(amount))
 			amount = (byte)(delta * Math.signum(amount));
 		mSpeed += amount;
@@ -157,9 +158,9 @@ public class LightRobotDataManager {
 	 */
 	public void alterDirection(byte amount)
 	{
-		short delta = (short)(MOVE_VALUE_MAX - (mDirection*Math.signum(amount)));
-		if(delta > MOVE_VALUE_MAX)
-			delta = MOVE_VALUE_MAX;
+		short delta = (short)(SPEED_VALUE_MAX - (mDirection*Math.signum(amount)));
+		if(delta > SPEED_VALUE_MAX)
+			delta = SPEED_VALUE_MAX;
 		if(delta < Math.abs(amount))
 			amount = (byte)(delta * Math.signum(amount));
 		mDirection += amount;
