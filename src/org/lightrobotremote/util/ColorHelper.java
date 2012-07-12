@@ -17,6 +17,7 @@ import android.graphics.Color;
 
 public class ColorHelper {
 	
+	
 	/** sets the color of the lamps [0, 255]
 	 * b0, b1 -> brightness -> 00 min, 11 max
 	 * b2, b3 -> red value
@@ -40,6 +41,10 @@ public class ColorHelper {
 												1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,
 												2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,2,2,2,2,2,2, 2,2,2,2,
 												3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3,3,3,3,3,3,3, 3,3,3,3, 3};
+	/*!Color definitions ins HSB Space*/
+	public static final int HSB_RED = 0xff000000;
+	public static final int HSB_GREEN = 0xffff4242;//is about 80 and equals green in the HSB space.
+	public static final int HSB_BLUE = 0xff0000f0;
 
 	/** Standard contr. initialises the values (color is 0)
 	 * 

@@ -430,6 +430,7 @@ public class LightRobotRemoteInterface extends Activity {
 		if(!mIsVoiceControlActive)
 		{
 			mControlStatus = STATUS_NO_CONTROL;
+			mDataManager.setMode((byte)0);
 			updateControlStatus();
 		}
 	}

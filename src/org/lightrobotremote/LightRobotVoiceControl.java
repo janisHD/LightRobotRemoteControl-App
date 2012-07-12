@@ -31,8 +31,8 @@ public class LightRobotVoiceControl {
 	private static final String PART_1_2 = "shine";
 	private static final String PART_1_3 = "blink";
 
-	private static final String PART_2_MOVE_0 = "forward";
-	private static final String PART_2_MOVE_1 = "backward";
+	private static final String PART_2_MOVE_0 = "remote";
+	private static final String PART_2_MOVE_1 = "backward";//not used
 	private static final String PART_2_MOVE_2 = "random";
 
 	private static final String PART_2_TURN_0 = "left";
@@ -56,7 +56,7 @@ public class LightRobotVoiceControl {
 	private byte driveMode;
 
 	private byte colorMode = 0;
-	
+
 	private  ColorHelper mColor = new ColorHelper(0);
 
 	private ArrayList<String> mWordsList;
@@ -146,10 +146,11 @@ public class LightRobotVoiceControl {
 				if(temp_command[0].equalsIgnoreCase(PART_1_0))//move
 				{
 					isFirstPartCorrect = true;
-					if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_0))//forward
+					if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_0))//remote
 					{
 						isSecondPartCorrect = true;
-						driveMode = LightRobotDataManager.DRIVE_MODE_FORWARD;					}
+						driveMode = LightRobotDataManager.DRIVE_MODE_REMOTE;
+					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_MOVE_1))//backward
 					{
 						isSecondPartCorrect = true;
@@ -179,7 +180,7 @@ public class LightRobotVoiceControl {
 				{
 					isFirstPartCorrect = true;
 					colorMode = LightRobotDataManager.COLOR_MODE_SHINE;
-					
+
 					if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_0))//white
 					{
 						isSecondPartCorrect = true;
@@ -193,17 +194,17 @@ public class LightRobotVoiceControl {
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_2))//red
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xff000000);//a bit different because it is interpreted as hsb
+						mColor.setColor(ColorHelper.HSB_RED);//a bit different because it is interpreted as hsb
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_3))//green
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xff00ff00);
+						mColor.setColor(ColorHelper.HSB_GREEN);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_4))//blue
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xffffffff);
+						mColor.setColor(ColorHelper.HSB_BLUE);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_SHINE_5))//random
 					{
@@ -215,7 +216,7 @@ public class LightRobotVoiceControl {
 				{
 					isFirstPartCorrect = true;
 					colorMode = LightRobotDataManager.COLOR_MODE_BLINK;
-					
+
 					if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_0))//white
 					{
 						isSecondPartCorrect = true;
@@ -224,22 +225,22 @@ public class LightRobotVoiceControl {
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_1))//black
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xff000000);
+						mColor.setColor(0x00000000);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_2))//red
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xffff0000);
+						mColor.setColor(ColorHelper.HSB_RED);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_3))//green
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xff00ff00);
+						mColor.setColor(ColorHelper.HSB_GREEN);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_4))//blue
 					{
 						isSecondPartCorrect = true;
-						mColor.setColor(0xff0000ff);
+						mColor.setColor(ColorHelper.HSB_BLUE);
 					}
 					else if(temp_command[1].equalsIgnoreCase(PART_2_BLINK_5))//random
 					{

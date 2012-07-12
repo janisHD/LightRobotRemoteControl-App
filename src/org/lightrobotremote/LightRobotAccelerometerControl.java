@@ -34,7 +34,7 @@ public class LightRobotAccelerometerControl implements SensorEventListener {
 	
 	private byte mDirection_acc = 0;
 	
-	public static final float UPPER_BORDER_DIRECTION = 6.0f;
+	public static final float UPPER_BORDER_DIRECTION = 7.5f;
 	public static final float LOWER_BORDER_DIRECTION = 0.f;
 	public static final float THRESHOLD_DIRECTION = 0.5f;
 	/*! Determines the parameter to transform from [LOWER_BORDER, UPPER_BORDER] to [0,DIRECTION_VALUE_MAX]
