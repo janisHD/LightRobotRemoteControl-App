@@ -2,6 +2,15 @@ LightRobotRemoteControl-App Readme file
 
 The App is tested and has been used only on a HTC-Desire, means there is no guarantee that this will work on other Android-Devices as it should!
 
+
+The Software which runs on the roboter can be found here (Arduino based):
+https://github.com/janisHD/LightRobot
+
+
+A video which shows the functionality can be found here:
+http://www.youtube.com/watch?v=hJi5qhOgbXw
+
+
 There are three different ways to control the Robot:
 
 -> There are several buttons, sliders and other control elements to control the robot with Touch-Input.
